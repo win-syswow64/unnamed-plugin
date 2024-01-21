@@ -1,0 +1,63 @@
+- group: 语音功能
+  list:
+    - icon: icon_26
+      title: "(/|#)发言人列表"
+      desc: '查看支持角色列表'
+    - icon: icon_26
+      title: "(/|#)合成接口"
+      desc: '(/|#)语言设置（1/2）'
+    - icon: icon_26
+      title: "(/|#)说"
+      desc: '(/|#)发言人 + 说 + 要说的话'
+    - icon: icon_26
+      title: "(/|#)语音语速设置"
+      desc: '(/|#)发言人 + 语音语速设置（0.1-2.0）'
+    - icon: icon_27
+      title: "(/|#)语音感情设置"
+      desc: '(/|#)发言人 + 语音感情设置（0.1-1.0）'
+    - icon: icon_27
+      title: "(/|#)语音发音时长设置"
+      desc: '(/|#)发言人 + 语音发音时长设置（0.1-2.0）'
+    - icon: icon_27
+      title: "(/|#)语音混合比设置(SDP/DP)"
+      desc: '(/|#)发言人 + 语音混合比设置（0-1.0）'
+    - icon: icon_27
+      title: "(/|#)语言设置"
+      desc: '(/|#)语言设置ZH/JP/EN'
+- group: 听歌功能
+  list:
+    - icon: icon_29
+      title: "(/|#)点歌"
+      desc: '(/|#)点歌 + xxx'
+    - icon: icon_29
+      title: "(/|#)听"
+      desc: '(/|#)听 + 序号'
+    - icon: icon_29
+      title: "(/|#)高清设置"
+      desc: '(/|#)高清(开/关)'
+    - icon: icon_29
+      title: "(/|#)音频接口"
+      desc: '(/|#)音频接口（qq1/qq2/网易云）'
+    - icon: icon_8
+      title: "(/|#)获取网易云ck"
+      desc: '(/|#)获取网易云ck'
+    - icon: icon_8
+      title: "(/|#)网易云ck设置"
+      desc: '(/|#)网易云ck设置'
+    - icon: icon_8
+      title: "暂不支持设置QQ音乐ck"
+      desc: '暂不支持设置QQ音乐ck'
+- group: 戳一戳功能
+  list:
+    - icon: icon_7
+      title: "(/|#)设置BotQQ"
+      desc: '使用非icqq连接器填写机器人QQ号'
+    - icon: icon_7
+      title: "(/|#)合成接口"
+      desc: '(/|#)语言设置（1/2）'
+    - icon: icon_7
+      title: "(/|#)设置禁言"
+      desc: '(/|#)设置禁言[0,30天],0为自增'
+    - icon: icon_7
+      title: "(/|#)设置戳一戳角色"
+      desc: '(/|#)设置戳一戳角色 + 角色名'

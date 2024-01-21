@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{pluResPath}}/html/help/help.css">
+    <link rel="preload" href="{{resPath}}/font/consola.ttf" as="font" />
+    <link rel="preload" href="{{pluResPath}}/image/background.jpg" as="image" />
+    <link rel="shortcut icon" href="#" />
+    {{@headStyle}}
+    <title>unnamed-plugin Help</title>
+</head>
+
+<body>
+    <div class="container" id="container">
+        <div class="head_box">
+            <div class="id_text">unnamed-plugin</div>
+            <h2 class="day_text">帮助 - 当前版本：v{{version}}</h2>
+        </div>
+
+        {{each helpData val}}
+        <div class="data_box">
+            <div class="tab_lable">
+                {{val.group}}{{val.disable ? ' - 已禁用' : ''}}
+            </div>
+            <div class="list">
+                {{each val.list item}}
+                <div class="item">
+                    <img class="icon" src="{{pluResPath}}/image/icon/{{item.icon}}.png" alt="{{item.title}} icon" />
+                    <div class="title">
+                        <div class="text">{{@item.title}}</div>
+                        <div class="dec">{{item.desc}}</div>
+                    </div>
+                </div>
+                {{/each}}
+            </div>
+        </div>
+        {{/each}}
+
+        <div class="logo">Created By Yunzai-Bot & unnamed-plugin</div>
+    </div>
+</body>
+
+</html>

@@ -1,0 +1,157 @@
+@font-face {
+    font-family: "consola";
+    src: url("../../img/consola.ttf");
+    font-weight: normal;
+    font-style: normal;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    -webkit-user-select: none;
+    user-select: none;
+}
+
+body {
+    font-family: sans-serif;
+    font-size: 16px;
+    width: 1050.66667px;
+    color: #9d19d9;
+    transform: scale(1.8);
+    transform-origin: 0 0;
+}
+
+.container {
+    width: 1050.66667px;
+    padding: 20px 15px 10px 20px;
+    background-image: url(../../image/background.jpg);
+    background-size: 100%;
+}
+
+/* 菜单头 */
+.head_box {
+    border-radius: 16px;
+    font-family: 'consola';
+    padding: 10px 20px;
+    position: relative;
+    color: white;
+    box-shadow: 0 5px 10px 0 rgb(0 0 0 / 50%);
+}
+
+.head_box .id_text {
+    font-size: 35px;
+}
+
+.head_box .day_text {
+    font-size: 25px;
+}
+
+.head_box .genshin_logo {
+    position: absolute;
+    top: -10px;
+    right: 15px;
+    width: 97px;
+}
+
+.base_info {
+    position: relative;
+    padding-left: 10px;
+}
+
+.uid {
+    font-family: consola;
+}
+
+.data_box {
+    border-radius: 15px;
+    margin: 20px 0 15px 0;
+    padding: 20px 0 5px 0;
+    background: transparent;
+    box-shadow: 0 0 1px 0 #ccc, 2px 2px 4px 0 rgba(50, 50, 50, 0.6);
+    position: relative;
+}
+
+/* 次菜单 */
+.tab_lable {
+    position: absolute;
+    top: -10px;
+    left: -8px;
+    background-color: #050f5c;
+    box-shadow: 0 0 1px 0 #ccc, 2px 2px 4px 0 rgba(50, 50, 50, 0.6);
+    color: #fff;
+    font-size: 15px;
+    padding: 3px 10px;
+    border-radius: 15px 0px 15px 15px;
+    z-index: 20;
+}
+
+.data_line {
+    display: flex;
+    justify-content: space-around;
+    margin-bottom: 14px;
+}
+
+.data_line_item {
+    width: 100px;
+    text-align: center;
+}
+
+.num {
+    font-family: consola;
+    font-size: 24px;
+}
+
+.data_box .lable {
+    font-size: 14px;
+    color: #d81d9b;
+    line-height: 1;
+    margin-top: 3px;
+}
+
+.list {
+    display: flex;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+}
+
+/* 命令字体 */
+.list .item {
+    width: 235px;
+    display: flex;
+    align-items: center;
+    color: rgb(255, 222, 254);
+    background: rgb(4 38 66 / 0.30);
+    box-shadow: 0 0 1px 0 #ccc, 2px 2px 4px 0 rgba(50, 50, 50, 0.6);
+    padding: 8px 6px 8px 6px;
+    border-radius: 8px;
+    margin: 0 6px 10px 10px;
+}
+
+.list .item .icon {
+    width: 24px;
+    height: 24px;
+    background-repeat: no-repeat;
+    background-size: 100% 100%;
+    position: relative;
+    flex-shrink: 0;
+}
+
+.list .item .title {
+    font-size: 22px;
+    margin-left: 6px;
+    line-height: 20px;
+}
+
+.list .item .title .dec {
+    font-size: 16px;
+    color: white;
+    margin-top: 2px;
+}
+
+.logo {
+    text-align: center;
+    font-size: 20px;
+    color: white;
+    font-family: 'consola';
+}
