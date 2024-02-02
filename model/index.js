@@ -19,12 +19,6 @@ class RConfig {
      * @returns {any}
      */
     getConfig(name) {
-        const ignore = [];
-
-        if (ignore.includes(name)) {
-            return this.getYaml(name);
-        }
-
         return this.getYaml(name);
     }
 
