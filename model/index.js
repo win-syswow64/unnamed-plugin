@@ -2,7 +2,7 @@ import fs from 'node:fs';
 import _ from 'lodash';
 import YAML from 'yaml';
 import chokidar from 'chokidar';
-import path from 'path';
+import * as path from 'path';
 
 class RConfig {
     constructor() {
@@ -52,16 +52,23 @@ class RConfig {
      * @param {string} name - 文件名
      */
     watch(file, name) {
+        if (this.watcher[name]) {
+            this.watcher[name].close();
+            delete this.watcher[name];
+        }
+
+        // 创建新的 watcher
         const watcher = chokidar.watch(file);
 
         watcher.on('change', (path) => {
             try {
-                logger.mark(`[修改配置文件][${path.basename(file)}]`);
+                logger.mark(`[修改配置文件][${name}]`);
             } catch (error) {
                 logger.error(`Error logging: ${error.message}`);
             }
         });
-        // 存储watcher对象，以便稍后可以取消监听
+
+        // 存储 watcher 对象，以便稍后可以取消监听
         this.watcher[name] = watcher;
     }
 

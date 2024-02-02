@@ -1,5 +1,5 @@
-import { getConfig, saveSet } from "../model/index.js";
-import TtsMain from '../model/ttsMain.js';
+import config from "../model/index.js";
+import TtsMain from '../model/ttsMain.js'
 
 export class TtsPlugin extends plugin {
     constructor() {
@@ -10,28 +10,32 @@ export class TtsPlugin extends plugin {
             priority: 999,
             rule: [
                 {
-                    reg: /^#?语音语速设置\d+$/,
+                    reg: /^#?(.*)语音语速设置\d+$/,
                     fnc: 'speedSet'
                 },
                 {
-                    reg: /^#?语音感情设置\d+$/,
+                    reg: /^#?(.*)语音感情设置\d+$/,
                     fnc: 'emotionSet'
                 },
                 {
-                    reg: /^#?语音发音时长设置\d+$/,
+                    reg: /^#?(.*)语音发音时长设置\d+$/,
                     fnc: 'noiseScaleWSet'
                 },
                 {
-                    reg: /^#?语音混合比设置\d+$/,
+                    reg: /^#?(.*)语音混合比设置\d+$/,
                     fnc: 'sdp_ratioSet'
                 },
                 {
-                    reg: /^#?(.*)说?(.*)$/,
+                    reg: /^#(.*)说(.*)$/,
                     fnc: 'voiceSend'
                 },
                 {
                     reg: /^#?(.*)恢复默认$/,
                     fnc: 'voiceReset'
+                },
+                {
+                    reg: /^#?语音接口切换$/,
+                    fnc: 'voiceApi'
                 }
             ]
         });
@@ -50,6 +54,11 @@ export class TtsPlugin extends plugin {
         const [, name, lengthScalenumStr] = match; // 使用解构赋值
         const lengthScalenum = Number(lengthScalenumStr);
 
+        if (!await isOK(name)) {
+            e.reply('该角色暂不支持');
+            return false;
+        }
+
         const defaultSettings = {
             noiseScale: 0.2,
             noiseScaleW: 0.2,
@@ -57,9 +66,11 @@ export class TtsPlugin extends plugin {
             sdp_ratio: 0.2
         };
 
-        await saveData(e, 'noiseScaleW', name, lengthScalenum, defaultSettings);
+        if (!saveData(e, 'lengthScale', name, lengthScalenum, defaultSettings)) {
+            return false;
+        }
 
-        e.reply(`${name}语音混合比已成功设置`);
+        e.reply(`${name}语音语速已成功设置`);
     }
 
     async emotionSet(e) {
@@ -75,6 +86,11 @@ export class TtsPlugin extends plugin {
         const [, name, noiseScalenumStr] = match; // 使用解构赋值
         const noiseScalenum = Number(noiseScalenumStr);
 
+        if (!await isOK(name)) {
+            e.reply('该角色暂不支持');
+            return false;
+        }
+
         const defaultSettings = {
             noiseScale: noiseScalenum,
             noiseScaleW: 0.2,
@@ -82,9 +98,11 @@ export class TtsPlugin extends plugin {
             sdp_ratio: 0.2
         };
 
-        await saveData(e, 'noiseScaleW', name, noiseScalenum, defaultSettings);
+        if (!saveData(e, 'noiseScale', name, noiseScalenum, defaultSettings)) {
+            return false;
+        }
 
-        e.reply(`${name}语音混合比已成功设置`);
+        e.reply(`${name}语音感情已成功设置`);
     }
 
     async noiseScaleWSet(e) {
@@ -100,6 +118,11 @@ export class TtsPlugin extends plugin {
         const [, name, noiseScaleWnumStr] = match; // 使用解构赋值
         const noiseScaleWnum = Number(noiseScaleWnumStr);
 
+        if (!await isOK(name)) {
+            e.reply('该角色暂不支持');
+            return false;
+        }
+
         const defaultSettings = {
             noiseScale: 0.2,
             noiseScaleW: noiseScaleWnum,
@@ -107,9 +130,11 @@ export class TtsPlugin extends plugin {
             sdp_ratio: 0.2
         };
 
-        await saveData(e, 'noiseScaleW', name, noiseScaleWnum, defaultSettings);
+        if (!saveData(e, 'noiseScaleW', name, noiseScaleWnum, defaultSettings)) {
+            return false;
+        }
 
-        e.reply(`${name}语音混合比已成功设置`);
+        e.reply(`${name}语音发音时长已成功设置`);
     }
 
     async sdp_ratioSet(e) {
@@ -124,6 +149,12 @@ export class TtsPlugin extends plugin {
 
         const [, name, sdp_rationumStr] = match; // 使用解构赋值
         const sdp_rationum = Number(sdp_rationumStr);
+        logger.info(name)
+
+        if (!await isOK(name)) {
+            e.reply('该角色暂不支持');
+            return false;
+        }
 
         const defaultSettings = {
             noiseScale: 0.2,
@@ -132,16 +163,37 @@ export class TtsPlugin extends plugin {
             sdp_ratio: sdp_rationum
         };
 
-        await saveData(e, 'sdp_ratio', name, sdp_rationum, defaultSettings);
+        if (!saveData(e, 'sdp_ratio', name, sdp_rationum, defaultSettings)) {
+            return false;
+        }
 
         e.reply(`${name}语音混合比已成功设置`);
     }
 
+    async voiceSend(e) {
+        let data = e.msg.split("#").slice(-1)[0].split("说")
+        while (data.length > 2) {
+            data[1] = data[1].concat("说").concat(data[2])
+            data.splice(2, 1)
+        }
+        let speaker = data[0]
+        let text = data[1] + ' '
+        logger.info(speaker)
+
+        if (!await isOK(speaker)) {
+            e.reply('该角色暂不支持');
+            return false;
+        }
+
+        logger.info("ok")
+
+        await TtsMain.ttsVoice(e, speaker, text);
+    }
+
     async voiceReset(e) {
         let name = e.msg.replace('恢复默认', '').replace('#', '');
-        let list = await TtsMain.ttsList();
 
-        if (!list.includes(name)) {
+        if (!await isOK(name)) {
             e.reply('该角色暂不支持');
             return false;
         }
@@ -153,13 +205,35 @@ export class TtsPlugin extends plugin {
             sdp_ratio: 0.2
         };
 
-        await saveData(e, 'reset', name, 0, defaultSettings);
+        if (!saveData(e, 'reset', name, 0, defaultSettings)) {
+            return false;
+        }
         e.reply(`${name}已恢复默认设置`);
+    }
+
+    async voiceApi(e) {
+        let apiConfig = config.getConfig("config");
+        if (!apiConfig.voiceApi) {
+            apiConfig.voiceApi = 'api1';
+            e.reply("接口已切换为：接口1")
+        }
+        if (apiConfig.voiceApi === 'api1') {
+            apiConfig.voiceApi = 'api2';
+            e.reply("接口已切换为：接口2")
+        } else {
+            apiConfig.voiceApi = 'api1';
+            e.reply("接口已切换为：接口1")
+        }
+        config.saveSet('config', apiConfig);
     }
 }
 
-async function saveData(e, operate, name, number, defaultSettings) {
-    let speakerConfig = getConfig("config");
+function saveData(e, operate, name, number, defaultSettings) {
+    let speakerConfig = config.getConfig("config");
+    if (!speakerConfig) {
+        // 如果 speakerConfig 为 null 或 undefined，创建一个新的配置对象
+        speakerConfig = {};
+    }
     if (operate === 'reset') {
         if (!speakerConfig[name]) {
             speakerConfig[name] = {};
@@ -178,7 +252,7 @@ async function saveData(e, operate, name, number, defaultSettings) {
             speakerConfig[name][operate] = number;
         }
     }
-    saveSet('config', speakerConfig);
+    config.saveSet('config', speakerConfig);
 }
 
 function isValidRange(operate, number, e) {
@@ -202,4 +276,12 @@ function isValidRange(operate, number, e) {
     }
 
     return true;
+}
+
+async function isOK(name) {
+    let list = await TtsMain.ttsList();
+    if (list.includes(name)) {
+        return true;
+    }
+    return false;
 }
