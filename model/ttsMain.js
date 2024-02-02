@@ -12,25 +12,7 @@ export class TtsMain {
     async ttsVoice(e, speaker, text) {
         const apiData = config.getConfig('config');
         const speakerData = config.getConfig('speaker');
-        let speakerConfig = config.getConfig("config");
-        if (!speakerConfig) {
-            // 如果 speakerConfig 为 null 或 undefined，创建一个新的配置对象
-            speakerConfig = {};
-        }
-        let language = "ZH"
-        const defaultSettings = {
-            noiseScale: 0.2,
-            noiseScaleW: 0.2,
-            lengthScale: 1,
-            sdp_ratio: 0.2
-        };
-        if (!speakerConfig[speaker]) {
-            Object.assign(speakerConfig[speaker], defaultSettings);
-            config.saveSet('config', speakerConfig);
-        }
-        let audiourl = ""
-        let ttsapi = "https://v2.genshinvoice.top/run/predict"
-        let api1url = 'https://api.lolimi.cn/API/yyhc/y.php'
+
         if (!apiData.voiceApi) {
             apiData.voiceApi = 'api1';
             config.saveSet('config', apiData);
@@ -38,20 +20,45 @@ export class TtsMain {
                 e.reply('该角色暂不支持');
                 return false;
             }
-            speaker = `${speaker}_${language}`
         } else if (apiData.voiceApi === 'api1') {
             if (!speakerData.cnmodel.includes(speaker)) {
                 e.reply('该角色暂不支持');
                 return false;
             }
         }
+
+        if (!apiData) {
+            // 如果 speakerConfig 为 null 或 undefined，创建一个新的配置对象
+            apiData = {};
+            logger.info("apiData")
+        }
+
+        const defaultSettings = {
+            noiseScale: 0.2,
+            noiseScaleW: 0.2,
+            lengthScale: 1,
+            sdp_ratio: 0.2
+        };
+
+        if (!apiData[speaker]) {
+            apiData[speaker] = {};
+            Object.assign(apiData[speaker], defaultSettings);
+            config.saveSet('config', apiData);
+        }
+
         logger.info(text)
         logger.info(speaker)
-        let sdp_ratio = speakerConfig[speaker]?.sdp_ratio;
-        let noiseScale = speakerConfig[speaker]?.noiseScale;
-        let noiseScaleW = speakerConfig[speaker]?.noiseScaleW;
-        let lengthScale = speakerConfig[speaker]?.lengthScale;
+
+        let language = "ZH"
+        let audiourl = ""
+        let ttsapi = "https://v2.genshinvoice.top/run/predict"
+        let api1url = 'https://api.lolimi.cn/API/yyhc/y.php'
+        let sdp_ratio = apiData[speaker]?.sdp_ratio;
+        let noiseScale = apiData[speaker]?.noiseScale;
+        let noiseScaleW = apiData[speaker]?.noiseScaleW;
+        let lengthScale = apiData[speaker]?.lengthScale;
         speaker = `${speaker}_${language}`
+
         if (apiData.voiceApi === 'api1') {
             let data = JSON.stringify({
                 "data": [`${text}`, `${speaker}`, sdp_ratio, noiseScale, noiseScaleW, lengthScale, `${language}`, null, "Happy", "Text prompt", "", 0.7],
@@ -79,7 +86,7 @@ export class TtsMain {
             responsel = await responsel.json()
             audiourl = responsel.music
         }
-        e.reply(audiourl).catch(error => {
+        e.reply(segment.record(audiourl)).catch(error => {
             e.reply(error)
             return false;
         })

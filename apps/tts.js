@@ -7,22 +7,22 @@ export class TtsPlugin extends plugin {
             name: 'tts语音生成',
             dsc: 'tts语音生成',
             event: 'message',
-            priority: 999,
+            priority: 1,
             rule: [
                 {
-                    reg: /^#?(.*)语音语速设置\d+$/,
+                    reg: /^#?(.*)语速设置\d+$/,
                     fnc: 'speedSet'
                 },
                 {
-                    reg: /^#?(.*)语音感情设置\d+$/,
+                    reg: /^#?(.*)感情设置\d+$/,
                     fnc: 'emotionSet'
                 },
                 {
-                    reg: /^#?(.*)语音发音时长设置\d+$/,
+                    reg: /^#?(.*)发音时长设置\d+$/,
                     fnc: 'noiseScaleWSet'
                 },
                 {
-                    reg: /^#?(.*)语音混合比设置\d+$/,
+                    reg: /^#?(.*)混合比设置\d+$/,
                     fnc: 'sdp_ratioSet'
                 },
                 {
@@ -178,14 +178,11 @@ export class TtsPlugin extends plugin {
         }
         let speaker = data[0]
         let text = data[1] + ' '
-        logger.info(speaker)
 
         if (!await isOK(speaker)) {
             e.reply('该角色暂不支持');
             return false;
         }
-
-        logger.info("ok")
 
         await TtsMain.ttsVoice(e, speaker, text);
     }
