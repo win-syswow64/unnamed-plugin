@@ -1,5 +1,8 @@
 import config from "../model/index.js";
 import TtsMain from '../model/ttsMain.js'
+import puppeteer from "../../../lib/puppeteer/puppeteer.js";
+
+const _path = process.cwd();
 
 export class TtsPlugin extends plugin {
     constructor() {
@@ -36,6 +39,10 @@ export class TtsPlugin extends plugin {
                 {
                     reg: /^(#|\/)?语音接口切换$/,
                     fnc: 'voiceApi'
+                },
+                {
+                    reg: /^(#|\/)?支持角色列表$/,
+                    fnc: 'voiceSpeaker'
                 }
             ]
         });
@@ -230,6 +237,15 @@ export class TtsPlugin extends plugin {
             e.reply("接口已切换为：接口1")
         }
         config.saveSet('config', apiConfig);
+    }
+
+    async voiceSpeaker(e) {
+        let img = await puppeteer.screenshot("cs", {
+            tplFile: `${_path}/plugins/unnamed-Plugin/resource/html/speakerlist/speakerlist.html`,
+            imgtype: 'png',
+            a: `${_path}/plugins/unnamed-Plugin/resource/html/speakerlist/speakerlist.css`,
+        });
+        e.reply(img)
     }
 }
 

@@ -1,0 +1,146 @@
+@font-face {
+    font-family: "consola";
+    src: url("../../../../../resources/font/consola.ttf");
+    font-weight: normal;
+    font-style: normal;
+}
+
+body {
+    font-family: sans-serif;
+    font-size: 25px;
+    width: 2960px;
+    color: white;
+    background-image: url('../../image/speakerbackground.jpeg');
+    transform: scale(1.4);
+    transform-origin: 0 0;
+}
+
+.main {
+    flex: 1;
+    background-size: 100% 100%;
+    background-repeat: no-repeat;
+    background-position: top;
+    background-size: cover;
+}
+
+.head_box {
+    justify-content: space-between;
+    border-radius: 15px;
+    font-family: consola;
+    padding: 10px 20px;
+    position: relative;
+    text-align: center;
+    box-shadow: 5px 5px 5px 2px rgb(135 206 235 / 50%);
+}
+
+.head_box2 {
+    border-radius: 150px;
+    font-family: consola;
+    padding: 20px 40px;
+    position: relative;
+    box-shadow: 0 10px 10px 0 rgb(0 0 0 / 15%);
+}
+
+.head_box .id_text {
+    font-size: 24px;
+}
+
+.head_box .day_text {
+    font-size: 24px;
+    color: #008080;
+}
+
+.head_box .title_text {
+    font-size: 50px;
+    color: white;
+}
+
+.data_box {
+    justify-content: space-between;
+    margin-top: 1px;
+    margin-bottom: 1px;
+    box-shadow: 5px 5px 5px 2px rgb(135 206 235 / 50%);
+    position: relative;
+    border-radius: 10px;
+}
+
+.tab_lable {
+    position: absolute;
+    top: -10px;
+    left: -8px;
+    background: #062c50;
+    color: #E6E8F0;
+    font-size: 26px;
+    padding: 3px 10px;
+    border-radius: 15px 0px 15px 15px;
+    z-index: 100;
+}
+
+.data_line {
+    display: flex;
+    justify-content: space-around;
+    margin-bottom: 14px;
+}
+
+.data_line_item {
+    width: 0px;
+    text-align: center;
+}
+
+.num {
+    font-family: consola;
+    font-size: 24px;
+}
+
+.list {
+    justify-content: space-between;
+    flex-wrap: wrap;
+    display: flex;
+    flex-direction: row;
+}
+
+.list .item {
+    width: auto;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    background: rgb(4 38 66 / 0.40);
+    padding: 8px 6px 8px 6px;
+    border-radius: 15px;
+    margin: 20px 20px 20px 20px;
+}
+
+.list .item .icon {
+    width: 20px;
+    height: 20px;
+    background-size: 50% 50%;
+    position: relative;
+    flex-shrink: 0;
+}
+
+.list .item .icon2 {
+    width: 28px;
+    height: 28px;
+    background-size: 100% 100%;
+}
+
+.list .item .title {
+    font-size: 28px;
+    line-height: 1.5;
+    margin-left: 6px;
+    line-height: 20px;
+}
+
+.list .item .title .dec {
+    font-size: 35px;
+    line-height: 1.5;
+    color: #98ffff;
+    margin-top: 1px;
+    word-wrap: break-word;
+    white-space: pre-wrap;
+}
+
+.logo {
+    text-align: center;
+    font-size: 28px;
+}
