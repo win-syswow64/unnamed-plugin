@@ -1,0 +1,16 @@
+voiceApi: api1
+纳西妲:
+  noiseScale: 0.2
+  noiseScaleW: 0.2
+  lengthScale: 1
+  sdp_ratio: 0.2
+刻晴:
+  noiseScale: 0.2
+  noiseScaleW: 0.2
+  lengthScale: 1
+  sdp_ratio: 0.2
+流萤:
+  noiseScale: 0.2
+  noiseScaleW: 0.2
+  lengthScale: 1
+  sdp_ratio: 0.2
