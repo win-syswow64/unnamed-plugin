@@ -4,6 +4,7 @@ import md5 from "md5"
 import config from "../model/index.js"
 // import Version from "../model/version.js"
 
+const { exec } = require('child_process')
 const _path = process.cwd();
 
 export class help extends plugin {
