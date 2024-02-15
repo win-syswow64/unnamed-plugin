@@ -4,7 +4,7 @@
       title: "(/|#)说"
       desc: '(/|#)角色 + 说 + 要说的话'
     - icon: icon_26
-      title: "(/|#)角色列表"
+      title: "(/|#)支持角色列表"
       desc: '查看支持角色列表'
     - icon: icon_26
       title: "(/|#)语音接口切换"
