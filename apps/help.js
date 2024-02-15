@@ -1,9 +1,11 @@
 import Help from "../model/help.js"
 import puppeteer from "../../../lib/puppeteer/puppeteer.js"
 import md5 from "md5"
+import { createRequire } from 'module'
 import config from "../model/index.js"
 // import Version from "../model/version.js"
 
+const require = createRequire(import.meta.url)
 const { exec } = require('child_process')
 const _path = process.cwd();
 
