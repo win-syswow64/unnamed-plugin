@@ -17,6 +17,9 @@ export class help extends plugin {
                 {
                     reg: "^(/|#)?无名帮助$",
                     fnc: "help",
+                }, {
+                    reg: "^(/|#)?无名更新$",
+                    fnc: "update",
                 }
             ],
         });
