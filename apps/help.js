@@ -33,6 +33,21 @@ export class help extends plugin {
         return true
     }
 
+    async update(e) {
+        var cmdStr = 'git -C ./plugins/unnamed-Plugin pull';
+        exec(cmdStr, async function (error, stdout, stderr) {
+            if (error) {
+                e.reply("更新失败：\n" + stderr + "\n");
+            } else {
+                if (stdout.includes('Already up to date.')) {
+                    e.reply("已是最新");
+                } else {
+                    e.reply("更新成功,请重启云崽以使更新生效。");
+                }
+            }
+        })
+    }
+
     async cache(data) {
         let tmp = md5(JSON.stringify(data))
         if (help.helpData.md5 === tmp) {
