@@ -10,31 +10,31 @@ export class TtsPlugin extends plugin {
             priority: 1,
             rule: [
                 {
-                    reg: /^#?(.*)语速设置\d+$/,
+                    reg: /^(#|\/)?(.*)语速设置\d+$/,
                     fnc: 'speedSet'
                 },
                 {
-                    reg: /^#?(.*)感情设置\d+$/,
+                    reg: /^(#|\/)?(.*)感情设置\d+$/,
                     fnc: 'emotionSet'
                 },
                 {
-                    reg: /^#?(.*)发音时长设置\d+$/,
+                    reg: /^(#|\/)?(.*)发音时长设置\d+$/,
                     fnc: 'noiseScaleWSet'
                 },
                 {
-                    reg: /^#?(.*)混合比设置\d+$/,
+                    reg: /^(#|\/)?(.*)混合比设置\d+$/,
                     fnc: 'sdp_ratioSet'
                 },
                 {
-                    reg: /^#(.*)说(.*)$/,
+                    reg: /^(#|\/)(.*)说(.*)$/,
                     fnc: 'voiceSend'
                 },
                 {
-                    reg: /^#?(.*)恢复默认$/,
+                    reg: /^(#|\/)?(.*)恢复默认$/,
                     fnc: 'voiceReset'
                 },
                 {
-                    reg: /^#?语音接口切换$/,
+                    reg: /^(#|\/)?语音接口切换$/,
                     fnc: 'voiceApi'
                 }
             ]
@@ -176,15 +176,21 @@ export class TtsPlugin extends plugin {
             data[1] = data[1].concat("说").concat(data[2])
             data.splice(2, 1)
         }
-        let speaker = data[0]
-        let text = data[1] + ' '
-
-        if (!await isOK(speaker)) {
-            e.reply('该角色暂不支持');
-            return false;
+        let language = 'ZH'
+        if (data[0].includes("中文")) {
+            language = "ZH";
+            data[0] = data[0].replace("中文", ""); // 删除已识别的语言标识
+        } else if (data[0].includes("英文")) {
+            language = "EN";
+            data[0] = data[0].replace("英文", ""); // 删除已识别的语言标识
+        } else if (data[0].includes("日语")) {
+            language = "JP";
+            data[0] = data[0].replace("日语", ""); // 删除已识别的语言标识
         }
+        let speaker = data[0];
+        let text = data[1];
 
-        await TtsMain.ttsVoice(e, speaker, text);
+        await TtsMain.ttsVoice(e, speaker, language, text);
     }
 
     async voiceReset(e) {
@@ -210,15 +216,17 @@ export class TtsPlugin extends plugin {
 
     async voiceApi(e) {
         let apiConfig = config.getConfig("config");
-        if (!apiConfig.voiceApi) {
-            apiConfig.voiceApi = 'api1';
-            e.reply("接口已切换为：接口1")
+        if (!apiConfig) {
+            apiConfig = {};
         }
-        if (apiConfig.voiceApi === 'api1') {
-            apiConfig.voiceApi = 'api2';
+        if (!apiConfig['voiceApi']) {
+            apiConfig['voiceApi'] = 'api1';
+            e.reply("接口已切换为：接口1")
+        } else if (apiConfig['voiceApi'] === 'api1') {
+            apiConfig['voiceApi'] = 'api2';
             e.reply("接口已切换为：接口2")
         } else {
-            apiConfig.voiceApi = 'api1';
+            apiConfig['voiceApi'] = 'api1';
             e.reply("接口已切换为：接口1")
         }
         config.saveSet('config', apiConfig);

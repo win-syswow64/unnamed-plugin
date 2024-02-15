@@ -9,28 +9,47 @@ export class TtsMain {
         return list;
     }
 
-    async ttsVoice(e, speaker, text) {
-        const apiData = config.getConfig('config');
+    async ttsVoice(e, speaker, language, text) {
+        let apiData = config.getConfig('config');
         const speakerData = config.getConfig('speaker');
-
-        if (!apiData.voiceApi) {
-            apiData.voiceApi = 'api1';
-            config.saveSet('config', apiData);
-            if (!speakerData.cnmodel.includes(speaker)) {
-                e.reply('该角色暂不支持');
-                return false;
-            }
-        } else if (apiData.voiceApi === 'api1') {
-            if (!speakerData.cnmodel.includes(speaker)) {
-                e.reply('该角色暂不支持');
-                return false;
-            }
-        }
 
         if (!apiData) {
             // 如果 speakerConfig 为 null 或 undefined，创建一个新的配置对象
             apiData = {};
-            logger.info("apiData")
+        }
+
+        if (!apiData['voiceApi']) {
+            apiData['voiceApi'] = 'api1';
+            config.saveSet('config', apiData);
+        }
+        if (apiData['voiceApi'] === 'api1') {
+            if (language === 'ZH') {
+                if (!speakerData.cnmodel.includes(speaker)) {
+                    e.reply(`该角色暂不支持, 当前角色语言为：${language}`);
+                    return false;
+                }
+            }
+            if (language === 'EN') {
+                if (!speakerData.enmodel.includes(speaker)) {
+                    e.reply(`该角色暂不支持, 当前角色语言为：${language}`);
+                    return false;
+                }
+            }
+            if (language === 'JP') {
+                if (!speakerData.jpmodel.includes(speaker)) {
+                    e.reply(`该角色暂不支持, 当前角色语言为：${language}`);
+                    return false;
+                }
+            }
+        } else if (apiData['voiceApi'] === 'api2') {
+            if (language != 'ZH') {
+                e.reply(`当前接口不支持: ${language},请切换接口。`);
+                return false;
+            }
+            if (!speakerData.api2model.includes(speaker)) {
+                e.reply('该角色暂不支持');
+                return false;
+            }
         }
 
         const defaultSettings = {
@@ -49,7 +68,6 @@ export class TtsMain {
         logger.info(text)
         logger.info(speaker)
 
-        let language = "ZH"
         let audiourl = ""
         let ttsapi = "https://v2.genshinvoice.top/run/predict"
         let api1url = 'https://api.lolimi.cn/API/yyhc/y.php'
@@ -57,9 +75,12 @@ export class TtsMain {
         let noiseScale = apiData[speaker]?.noiseScale;
         let noiseScaleW = apiData[speaker]?.noiseScaleW;
         let lengthScale = apiData[speaker]?.lengthScale;
-        speaker = `${speaker}_${language}`
 
         if (apiData.voiceApi === 'api1') {
+            if (speaker != '夏彦' || speaker != '左然' || speaker != '莫奕' || speaker != '陆景和') {
+                speaker = `${speaker}_${language}`
+            }
+            logger.info(speaker)
             let data = JSON.stringify({
                 "data": [`${text}`, `${speaker}`, sdp_ratio, noiseScale, noiseScaleW, lengthScale, `${language}`, null, "Happy", "Text prompt", "", 0.7],
                 "event_data": null,
@@ -81,15 +102,12 @@ export class TtsMain {
             responsel = await responsel.json()
             audiourl = `https://v2.genshinvoice.top/file=${responsel.data[1].name}`
         } else {
-            let audioLink = `${api1url}?msg=${text}&speaker=${speaker}&Length=${lengthScale}&noisew=${noiseScaleW}&sdp=${sdp_ratio}&noise=${noiseScale}&yy='中'`
+            let audioLink = `${api1url}?msg=${text}&speaker=${speaker}&Length=${lengthScale}&noisew=${noiseScaleW}&sdp=${sdp_ratio}&noise=${noiseScale}`
             let responsel = await fetch(audioLink)
             responsel = await responsel.json()
             audiourl = responsel.music
         }
-        e.reply(segment.record(audiourl)).catch(error => {
-            e.reply(error)
-            return false;
-        })
+        e.reply(segment.record(audiourl))
     }
 }
 export default new TtsMain()
