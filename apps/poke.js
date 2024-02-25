@@ -192,6 +192,7 @@ export class TtsPlugin extends plugin {
                     }
 
                     let photo_number = Math.ceil(Math.random() * (pokeconfig['pokejpgnumber'] + pokeconfig['pokegifnumber']));
+                    let chuo_path = _path + `/plugins/unnamed-plugin/resources/poke/`
 
                     try {
                         if (photo_number <= pokeconfig['pokejpgnumber']) {
