@@ -78,6 +78,21 @@ export class TtsPlugin extends plugin {
             config.saveSet('config', pokeconfig);
         }
 
+        if (!pokeconfig['pokemutenumber']) {
+            pokeconfig['pokemutenumber'] = 1;
+            config.saveSet('config', pokeconfig);
+        }
+
+        if (!pokeconfig['maxpoke']) {
+            pokeconfig['maxpoke'] = 36;
+            config.saveSet('config', pokeconfig);
+        }
+
+        if (!pokeconfig['pokemutemaster']) {
+            pokeconfig['pokemutemaster'] = true;
+            config.saveSet('config', pokeconfig);
+        }
+
         if (pokeconfig['pokemaster']) {
             if (cfg.masterQQ.includes(e.target_id)) {
 
@@ -206,6 +221,62 @@ export class TtsPlugin extends plugin {
 
                 else if (random_type < (reply_text + reply_img + reply_voice + mutepick)) {
                     logger.info('[禁言生效]');
+
+                    if (pokeconfig['pokemutemaster']) {
+                        logger.info('[主人不禁言开启]');
+                        let Text = poketext['poketext'][Math.floor(Math.random() * poketext['poketext'].length)].replace("_name_", conf.botAlias[0]);
+                        logger.info(`合成文本：${Text}`);
+
+                        await TtsMain.ttsVoice(e, pokeconfig['pokespeaker'], 'ZH', Text);
+                    }
+
+                    let mutenumber = pokeconfig['pokemutenumber'];
+
+                    if (mutenumber == 0) {
+                        let count = await redis.get(`Yz:pokecount${e.operator_id}:`);
+
+                        if (!count) {
+                            await redis.set(`Yz:pokecount${e.operator_id}:`, 1 * 1, { EX: exTime });
+                        } else {
+                            await redis.set(`Yz:pokecount${e.operator_id}:`, ++count, { EX: exTime });
+                        }
+
+                        if (count >= pokeconfig['maxpoke']) {
+                            count = Math.round(exTime / 3600);
+                        }
+                        mutenumber = count;
+                    }
+
+                    logger.info(e.operator_id + `将要被禁言${usercount}分钟`)
+
+                    let mutetype = Math.ceil(Math.random() * 3)
+
+                    if (mutetype == 1) {
+                        e.reply('我生气了！砸挖撸多!木大！木大木大！');
+                        await common.sleep(1000);
+                        e.group.muteMember(e.operator_id, 60 * mutenumber);
+                    }
+
+                    if (mutetype == 2) {
+                        e.reply('不！！');
+                        await common.sleep(1000);
+                        e.reply('准！！');
+                        await common.sleep(1000);
+                        e.reply('戳！！');
+                        await common.sleep(1000);
+                        e.group.muteMember(e.operator_id, 60 * mutenumber);
+                        await common.sleep(1000);
+                        return;
+                    }
+
+                    if (mutetype == 3) {
+                        e.reply('哼，我可是会还手的哦')
+                        await common.sleep(1000)
+                        e.group.pokeMember(e.operator_id)
+                        await common.sleep(1000)
+                        e.group.muteMember(e.operator_id, 60 * (usercount + 1))
+                        return
+                    }
                 }
 
                 else if (random_type < (reply_text + reply_img + reply_voice + mutepick + example)) {
