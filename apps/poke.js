@@ -189,7 +189,7 @@ export class TtsPlugin extends plugin {
                     logger.info('[回复随机图片生效]');
 
                     if (pokeconfig['pokejpgnumber'] == 0 && pokeconfig['pokegifnumber'] == 0) {
-                        e.reply("图片库为空，请下载图片。");
+                        e.reply("图片数量未设置，请设置图片数量。");
                     }
 
                     let photo_number = Math.ceil(Math.random() * (pokeconfig['pokejpgnumber'] + pokeconfig['pokegifnumber']));
