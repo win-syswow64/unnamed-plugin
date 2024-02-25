@@ -4,7 +4,7 @@ import puppeteer from "../../../lib/puppeteer/puppeteer.js";
 
 const _path = process.cwd();
 
-export class TtsPlugin extends plugin {
+export class Tts extends plugin {
     constructor() {
         super({
             name: 'tts语音生成',

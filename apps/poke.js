@@ -5,7 +5,7 @@ import moment from "moment";
 
 const _path = process.cwd()
 
-export class TtsPlugin extends plugin {
+export class Poke extends plugin {
     constructor() {
         super({
             name: '戳一戳',
