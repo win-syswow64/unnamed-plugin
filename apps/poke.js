@@ -2,7 +2,6 @@ import cfg from '../../../lib/config/config.js';
 import common from '../../../lib/common/common.js';
 import config from "../model/index.js";
 import moment from "moment";
-import fetch from 'node-fetch';
 
 const _path = process.cwd()
 
