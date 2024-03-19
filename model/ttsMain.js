@@ -69,7 +69,7 @@ export class TtsMain {
         logger.info(speaker)
 
         let audiourl = ""
-        let ttsapi = "https://v2.genshinvoice.top/run/predict"
+        let ttsapi = "https://bv2.firefly.matce.cn/run/predict"
         let api1url = 'https://api.lolimi.cn/API/yyhc/y.php'
         let sdp_ratio = apiData[speaker]?.sdp_ratio;
         let noiseScale = apiData[speaker]?.noiseScale;
@@ -82,7 +82,7 @@ export class TtsMain {
             }
             logger.info(speaker)
             let data = JSON.stringify({
-                "data": [`${text}`, `${speaker}`, sdp_ratio, noiseScale, noiseScaleW, lengthScale, `${language}`, null, "Happy", "Text prompt", "", 0.7],
+                "data": [`${text}`, `${speaker}`, sdp_ratio, noiseScale, noiseScaleW, lengthScale, `${language}`, true, 1, 0.2, null, "Happy", "", "", 0.7],
                 "event_data": null,
                 "fn_index": 0,
                 "session_hash": "v141oxnc02o"
@@ -100,7 +100,7 @@ export class TtsMain {
                 }
             )
             responsel = await responsel.json()
-            audiourl = `https://v2.genshinvoice.top/file=${responsel.data[1].name}`
+            audiourl = `https://bv2.firefly.matce.cn/file=${responsel.data[1].name}`
         } else {
             let audioLink = `${api1url}?msg=${text}&speaker=${speaker}&Length=${lengthScale}&noisew=${noiseScaleW}&sdp=${sdp_ratio}&noise=${noiseScale}`
             let responsel = await fetch(audioLink)
