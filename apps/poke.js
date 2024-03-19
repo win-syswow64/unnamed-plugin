@@ -1,6 +1,7 @@
 import cfg from '../../../lib/config/config.js';
 import common from '../../../lib/common/common.js';
 import config from "../model/index.js";
+import TtsMain from '../model/ttsMain.js'
 import moment from "moment";
 
 const _path = process.cwd()
@@ -34,6 +35,11 @@ export class Poke extends plugin {
 
         if (!pokeconfig['pokemaster']) {
             pokeconfig['pokemaster'] = true;
+            config.saveSet('config', pokeconfig);
+        }
+
+        if (!pokeconfig['poke']) {
+            pokeconfig['poke'] = true;
             config.saveSet('config', pokeconfig);
         }
 
@@ -119,9 +125,21 @@ export class Poke extends plugin {
             }
         }
 
-        if (!pokeconfig['poke']) {
-            pokeconfig['poke'] = true;
-            config.saveSet('config', pokeconfig);
+        let mutenumber = pokeconfig['pokemutenumber'];
+
+        if (mutenumber == 0) {
+            let count = await redis.get(`Yz:pokecount${e.operator_id}:`);
+
+            if (!count) {
+                await redis.set(`Yz:pokecount${e.operator_id}:`, 1 * 1, { EX: exTime });
+            } else {
+                await redis.set(`Yz:pokecount${e.operator_id}:`, ++count, { EX: exTime });
+            }
+
+            if (count >= pokeconfig['maxpoke']) {
+                return false;
+            }
+            mutenumber = count;
         }
 
         if (pokeconfig['poke']) {
@@ -186,28 +204,24 @@ export class Poke extends plugin {
 
                 else if (random_type < (reply_text + reply_img)) {
                     logger.info('[回复随机图片生效]');
-
-                    if (pokeconfig['pokejpgnumber'] == 0 && pokeconfig['pokegifnumber'] == 0) {
-                        e.reply("图片数量未设置，请设置图片数量。");
-                    }
-
-                    let photo_number = Math.ceil(Math.random() * (pokeconfig['pokejpgnumber'] + pokeconfig['pokegifnumber']));
-                    let chuo_path = _path + `/plugins/unnamed-plugin/resources/poke/`
-
-                    try {
-                        if (photo_number <= pokeconfig['pokejpgnumber']) {
-                            e.reply(segment.image(chuo_path + photo_number + '.jpg'));
+                    fetch("http://api.115832958.xyz/API/pokePhoto.php").then(Response => Response.json()).then(data => {
+                        if (data) {
+                            if (data.status == 200) {
+                                try {
+                                    e.reply([segment.image(data.link)])
+                                }
+                                catch (err) {
+                                    e.reply('图片获取失败，请检查网络链接或联系开发者。');
+                                }
+                            }
+                            else {
+                                e.reply(`获取图链失败，错误码：${data.status}`);
+                            }
                         }
                         else {
-                            photo_number = photo_number - pokeconfig['pokejpgnumber'];
-                            e.reply(segment.image(chuo_path + photo_number + '.gif'));
+                            e.reply('图片api异常。');
                         }
-                        return true;
-                    }
-                    catch {
-                        e.reply('图片资源不存在, 请检查图片是否使用数字命名，图片格式是否为jpg或gif格式。\n请注意：jpg格式图片与gif格式图片分别计数');
-                        return false;
-                    }
+                    })
                 }
 
                 else if (random_type < (reply_text + reply_img + reply_voice)) {
@@ -223,28 +237,11 @@ export class Poke extends plugin {
                     logger.info('[禁言生效]');
 
                     if (pokeconfig['pokemutemaster']) {
-                        logger.info('[主人不禁言开启]');
+                        logger.info('[主人不禁言已开启]');
                         let Text = poketext['poketext'][Math.floor(Math.random() * poketext['poketext'].length)].replace("_name_", conf.botAlias[0]);
                         logger.info(`合成文本：${Text}`);
 
                         await TtsMain.ttsVoice(e, pokeconfig['pokespeaker'], 'ZH', Text);
-                    }
-
-                    let mutenumber = pokeconfig['pokemutenumber'];
-
-                    if (mutenumber == 0) {
-                        let count = await redis.get(`Yz:pokecount${e.operator_id}:`);
-
-                        if (!count) {
-                            await redis.set(`Yz:pokecount${e.operator_id}:`, 1 * 1, { EX: exTime });
-                        } else {
-                            await redis.set(`Yz:pokecount${e.operator_id}:`, ++count, { EX: exTime });
-                        }
-
-                        if (count >= pokeconfig['maxpoke']) {
-                            count = Math.round(exTime / 3600);
-                        }
-                        mutenumber = count;
                     }
 
                     logger.info(e.operator_id + `将要被禁言${usercount}分钟`)
