@@ -87,7 +87,7 @@ export class TtsMain {
                 "fn_index": 0,
                 "session_hash": "v141oxnc02o"
             })
-            let responsel = await fetch(ttsapi
+            let response = await fetch(ttsapi
                 , {
                     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36',
                     'Accept-Language': 'en-US,en;q=0.5',
@@ -99,15 +99,43 @@ export class TtsMain {
                     'body': data
                 }
             )
-            responsel = await responsel.json()
-            audiourl = `https://bv2.firefly.matce.cn/file=${responsel.data[1].name}`
+            if (!response.ok) {
+                e.reply('接口请求失败,请切换接口或稍后重试。');
+                logger.error(`接口请求失败，错误码：${response}`);
+                return false;
+            }
+            try {
+                response = await response.json();
+            } catch (error) {
+                e.reply('接口请求失败,请切换接口或稍后重试。')
+                logger.error(error);
+                return false;
+            }
+            audiourl = `https://bv2.firefly.matce.cn/file=${response.data[1].name}`
         } else {
             let audioLink = `${api1url}?msg=${text}&speaker=${speaker}&Length=${lengthScale}&noisew=${noiseScaleW}&sdp=${sdp_ratio}&noise=${noiseScale}`
-            let responsel = await fetch(audioLink)
-            responsel = await responsel.json()
-            audiourl = responsel.music
+            let response = await fetch(audioLink);
+            if (!response.ok) {
+                e.reply('接口请求失败,请切换接口或稍后重试。');
+                logger.error(`接口请求失败，错误码：${response}`);
+                return false;
+            }
+            try {
+                response = await response.json();
+            } catch (error) {
+                e.reply('接口请求失败,请切换接口或稍后重试。')
+                logger.error(error);
+                return false;
+            }
+            audiourl = response.music;
         }
-        e.reply(segment.record(audiourl))
+        try {
+            e.reply(segment.record(audiourl));
+        } catch (error) {
+            e.reply('音频发送失败，请查看日志获取详细信息。')
+            logger.error(error);
+            return false;
+        }
     }
 }
 export default new TtsMain()
