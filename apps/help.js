@@ -1,13 +1,8 @@
 import Help from "../model/help.js"
 import puppeteer from "../../../lib/puppeteer/puppeteer.js"
 import md5 from "md5"
-import { createRequire } from 'module'
 import config from "../model/index.js"
 // import Version from "../model/version.js"
-
-const require = createRequire(import.meta.url)
-const { exec } = require('child_process')
-const _path = process.cwd();
 
 export class help extends plugin {
     constructor(e) {
@@ -20,9 +15,6 @@ export class help extends plugin {
                 {
                     reg: "^(/|#)?无名帮助$",
                     fnc: "help",
-                }, {
-                    reg: "^(/|#)?无名更新$",
-                    fnc: "update",
                 }
             ],
         });
@@ -37,21 +29,6 @@ export class help extends plugin {
         let img = await this.cache(data)
         await this.reply(img)
         return true
-    }
-
-    async update(e) {
-        var cmdStr = 'git -C ./plugins/unnamed-Plugin pull';
-        exec(cmdStr, async function (error, stdout, stderr) {
-            if (error) {
-                e.reply("更新失败：\n" + stderr + "\n");
-            } else {
-                if (stdout.includes('Already up to date.')) {
-                    e.reply("已是最新");
-                } else {
-                    e.reply("更新成功,请重启云崽以使更新生效。");
-                }
-            }
-        })
     }
 
     async cache(data) {
