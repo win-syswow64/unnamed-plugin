@@ -1,4 +1,4 @@
-import cfg from '../../lib/config/config.js'
+import cfg from '../../../lib/config/config.js'
 import { Restart } from '../../other/restart.js'
 import { createRequire } from 'module'
 import lodash from 'lodash'
@@ -8,7 +8,7 @@ const { exec, execSync } = require('child_process')
 
 let updateflag = false;
 
-export class updata extends plugin {
+export class update extends plugin {
     constructor(e) {
         super({
             name: "无名插件更新",
@@ -51,7 +51,7 @@ export class updata extends plugin {
 
         /** 是否需要重启 */
         if (isUP) {
-            await e.reply('即将执行重启')
+            e.reply('即将执行重启')
             setTimeout(() => new Restart(e).restart(), 2000)
         }
     }
@@ -209,7 +209,7 @@ function getLog(e, plugin = '', oldCommitId) {
 function makeForwardMsg(e, title, msg) {
     let nickname = (e.bot ?? Bot).nickname;
     if (e.isGroup) {
-        let info = await(e.bot ?? Bot).getGroupMemberInfo(e.group_id, (e.bot ?? Bot).uin);
+        let info = (e.bot ?? Bot).getGroupMemberInfo(e.group_id, (e.bot ?? Bot).uin);
         nickname = info.card || info.nickname;
     }
     let userInfo = {
@@ -254,10 +254,10 @@ function makeForwardMsg(e, title, msg) {
     return forwardMsg;
 }
 
-function execSync(cmd) {
-    return new Promise((resolve, reject) => {
-        exec(cmd, { windowsHide: true }, (error, stdout, stderr) => {
-            resolve({ error, stdout, stderr });
-        })
-    })
-}
+// function execSync(cmd) {
+//     return new Promise((resolve, reject) => {
+//         exec(cmd, { windowsHide: true }, (error, stdout, stderr) => {
+//             resolve({ error, stdout, stderr });
+//         })
+//     })
+// }

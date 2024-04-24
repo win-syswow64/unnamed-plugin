@@ -43,16 +43,6 @@ export class Poke extends plugin {
             config.saveSet('config', pokeconfig);
         }
 
-        if (!pokeconfig['pokejpgnumber']) {
-            pokeconfig['pokejpgnumber'] = 0;
-            config.saveSet('config', pokeconfig);
-        }
-
-        if (!pokeconfig['pokegifnumber']) {
-            pokeconfig['pokegifnumber'] = 0;
-            config.saveSet('config', pokeconfig);
-        }
-
         if (!pokeconfig['poketext']) {
             pokeconfig['poketext'] = 0.4;
             config.saveSet('config', pokeconfig);
@@ -182,11 +172,11 @@ export class Poke extends plugin {
                     reply_voice = 0.15
                     mutepick = 0.15
                     example = 0.07
-                    poketext['reply_text'] = 0.4
-                    poketext['reply_img'] = 0.15
-                    poketext['reply_voice'] = 0.15
-                    poketext['mutepick'] = 0.15
-                    poketext['example'] = 0.7
+                    poketext['reply_text'] = reply_text
+                    poketext['reply_img'] = reply_img
+                    poketext['reply_voice'] = reply_voice
+                    poketext['mutepick'] = mutepick
+                    poketext['example'] = example
                     config.saveSet('config', pokeconfig);
                     e.reply(`数据设置有误，已恢复默认。`)
                 }
