@@ -224,17 +224,31 @@ export class Poke extends plugin {
                 }
 
                 else if (random_type < (reply_text + reply_img + reply_voice + mutepick)) {
-                    logger.info('[禁言生效]');
 
-                    if (pokeconfig['pokemutemaster']) {
-                        logger.info('[主人不禁言已开启]');
-                        let Text = poketext['poketext'][Math.floor(Math.random() * poketext['poketext'].length)].replace("_name_", conf.botAlias[0]);
-                        logger.info(`合成文本：${Text}`);
+                    let group = Bot.pickGroup(`${e.group_id}`, true);
 
-                        await TtsMain.ttsVoice(e, pokeconfig['pokespeaker'], 'ZH', Text);
+                    if ((pokeconfig['pokemutemaster'] && cfg.masterQQ.includes(e.operator_id)) || !group.is_admin) {
+                        fetch("https://api.xingdream.top/API/poke.php").then(Response => Response.json()).then(data => {
+                            if (data) {
+                                if (data.status == 200) {
+                                    try {
+                                        e.reply([segment.image(data.link)])
+                                    }
+                                    catch (err) {
+                                        e.reply('图片获取失败，请检查网络链接或联系开发者。');
+                                    }
+                                }
+                                else {
+                                    e.reply(`获取图链失败，错误码：${data.status}`);
+                                }
+                            }
+                            else {
+                                e.reply('图片api异常。');
+                            }
+                        })
                     }
 
-                    logger.info(e.operator_id + `将要被禁言${usercount}分钟`)
+                    logger.info('[禁言生效]');
 
                     let mutetype = Math.ceil(Math.random() * 3)
 
