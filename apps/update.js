@@ -19,11 +19,11 @@ export class update extends plugin {
             rule: [
                 {
                     reg: "^(/|#)?无名(强制)?更新$",
-                    fnc: this.update
+                    fnc: 'update'
                 },
                 {
                     reg: "^(/|#)?无名更新日志$",
-                    fnc: this.updateLog
+                    fnc: 'updateLog'
                 }
             ],
         });
@@ -275,10 +275,3 @@ function makeForwardMsg(e, title, msg) {
     return forwardMsg;
 }
 
-function execSync(cmd) {
-    return new Promise((resolve, reject) => {
-        exec(cmd, { windowsHide: true }, (error, stdout, stderr) => {
-            resolve({ error, stdout, stderr });
-        })
-    })
-}
