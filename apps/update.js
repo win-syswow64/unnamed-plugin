@@ -1,14 +1,15 @@
-import cfg from '../../lib/config/config.js'
-import { Restart } from '../../other/restart.js'
-import { createRequire } from 'module'
-import lodash from 'lodash'
+import cfg from '../../../lib/config/config.js';
+import { Restart } from '../../other/restart.js';
+import { createRequire } from 'module';
+import lodash from 'lodash';
+import { execSync } from 'child_process';
 
-const require = createRequire(import.meta.url)
-const { exec, execSync } = require('child_process')
+const require = createRequire(import.meta.url);
+const { exec } = require('child_process');
 
 let updateflag = false;
 
-export class updata extends plugin {
+export class update extends plugin {
     constructor(e) {
         super({
             name: "无名插件更新",
@@ -38,36 +39,41 @@ export class updata extends plugin {
             return false;
         }
 
-        if (!(checkGit())) {
+        if (!(await checkGit())) {
             e.reply('请先安装git');
             return;
         }
 
-        const isForce = e.msg.includes('强制')
+        const isForce = e.msg.includes('强制');
 
         let isUP = false;
         let oldCommitId = false;
-        runUpdate(e, isForce, isUP, oldCommitId);
+        isUP = await runUpdate(e, isForce, isUP, oldCommitId);
 
         /** 是否需要重启 */
         if (isUP) {
-            await e.reply('即将执行重启')
-            setTimeout(() => new Restart(e).restart(), 2000)
+            e.reply('即将执行重启');
+            setTimeout(() => new Restart(e).restart(), 2000);
         }
     }
 
 }
 
-function checkGit() {
-    let ret = execSync('git --version', { encoding: 'utf-8' });
-    if (!ret || !ret.includes('git version')) {
+async function checkGit() {
+    try {
+        const ret = await executeCommandSync('git --version');
+        if (!ret || !ret.stdout.includes('git version')) {
+            return false;
+        } else {
+            return true;
+        }
+    } catch (error) {
+        logger.error('Error checking Git:', error);
         return false;
-    } else {
-        return true;
     }
 }
 
-function runUpdate(e, isForce, isUP, oldCommitId) {
+async function runUpdate(e, isForce, isUP, oldCommitId) {
     let command = 'git -C ./plugins/unnamed-plugin/ pull --no-rebase';
     if (isForce) {
         command = `git -C ./plugins/unnamed-plugin/ checkout . && ${command}`;
@@ -78,31 +84,47 @@ function runUpdate(e, isForce, isUP, oldCommitId) {
     /** 获取上次提交的commitId，用于获取日志时判断新增的更新日志 */
     oldCommitId = getcommitId('unnamed-plugin');
     updateflag = true;
-    const ret = execSync(command);
-    updateflag = false;
+    try {
+        const ret = await executeCommandSync(command);
+        if (ret.error) {
+            console.error(`${e.logFnc} 更新失败：unnamed-plugin.`);
+            gitErr(e, ret.error, ret.stdout);
+            return false;
+        }
 
-    if (ret.error) {
-        logger.error(`${e.logFnc} 更新失败：unnamed-plugin.`);
-        gitErr(e, ret.error, ret.stdout);
+        /** 获取插件提交的最新时间 */
+        const time = getTime('unnamed-plugin');
+
+        if (/(Already up[ -]to[ -]date|已经是最新的)/.test(ret.stdout)) {
+            e.reply(`unnamed-plugin已经是最新版本\n最后更新时间：${time}.`);
+        } else {
+            e.reply(`unnamed-plugin\n最后更新时间：${time}.`);
+            isUP = true;
+            /** 获取vits-plugin的更新日志 */
+            const log = getLog(e, 'unnamed-plugin', oldCommitId);
+            e.reply(log);
+        }
+
+        logger.log(`${e.logFnc} 最后更新时间：${time}.`);
+        return true;
+    } catch (error) {
+        logger.error('Error running update:', error);
         return false;
+    } finally {
+        updateflag = false;
     }
+}
 
-    /** 获取插件提交的最新时间 */
-    const time = getTime('unnamed-plugin');
-
-    if (/(Already up[ -]to[ -]date|已经是最新的)/.test(ret.stdout)) {
-        e.reply(`unnamed-plugin已经是最新版本\n最后更新时间：${time}.`);
-    } else {
-        e.reply(`unnamed-plugin\n最后更新时间：${time}.`);
-        isUP = true;
-        /** 获取vits-plugin的更新日志 */
-        const log = getLog(e, 'unnamed-plugin', oldCommitId);
-        e.reply(log);
-    }
-
-    logger.mark(`${e.logFnc} 最后更新时间：${time}.`);
-
-    return true;
+async function executeCommandSync(cmd) {
+    return new Promise((resolve, reject) => {
+        exec(cmd, { windowsHide: true }, (error, stdout, stderr) => {
+            if (error) {
+                reject(error);
+            } else {
+                resolve({ stdout, stderr });
+            }
+        });
+    });
 }
 
 function getcommitId(plugin = '') {
@@ -118,7 +140,6 @@ function gitErr(e, err, stdout) {
     const msg = '更新失败！';
     const errMsg = err.toString();
     stdout = stdout.toString();
-
     if (errMsg.includes('Timed out')) {
         const remote = errMsg.match(/'(.+?)'/g)[0].replace(/'/g, '');
         e.reply(msg + `\n连接超时：${remote}.`);
@@ -149,7 +170,7 @@ function gitErr(e, err, stdout) {
         return false;
     }
 
-    e.reply([errMsg, stdout])
+    e.reply([errMsg, stdout]);
 }
 
 function getTime(plugin = '') {
@@ -209,7 +230,7 @@ function getLog(e, plugin = '', oldCommitId) {
 function makeForwardMsg(e, title, msg) {
     let nickname = (e.bot ?? Bot).nickname;
     if (e.isGroup) {
-        let info = await(e.bot ?? Bot).getGroupMemberInfo(e.group_id, (e.bot ?? Bot).uin);
+        let info = (e.bot ?? Bot).getGroupMemberInfo(e.group_id, (e.bot ?? Bot).uin);
         nickname = info.card || info.nickname;
     }
     let userInfo = {
@@ -254,10 +275,3 @@ function makeForwardMsg(e, title, msg) {
     return forwardMsg;
 }
 
-function execSync(cmd) {
-    return new Promise((resolve, reject) => {
-        exec(cmd, { windowsHide: true }, (error, stdout, stderr) => {
-            resolve({ error, stdout, stderr });
-        })
-    })
-}

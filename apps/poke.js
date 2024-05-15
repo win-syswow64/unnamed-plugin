@@ -43,16 +43,6 @@ export class Poke extends plugin {
             config.saveSet('config', pokeconfig);
         }
 
-        if (!pokeconfig['pokejpgnumber']) {
-            pokeconfig['pokejpgnumber'] = 0;
-            config.saveSet('config', pokeconfig);
-        }
-
-        if (!pokeconfig['pokegifnumber']) {
-            pokeconfig['pokegifnumber'] = 0;
-            config.saveSet('config', pokeconfig);
-        }
-
         if (!pokeconfig['poketext']) {
             pokeconfig['poketext'] = 0.4;
             config.saveSet('config', pokeconfig);
@@ -182,11 +172,11 @@ export class Poke extends plugin {
                     reply_voice = 0.15
                     mutepick = 0.15
                     example = 0.07
-                    poketext['reply_text'] = 0.4
-                    poketext['reply_img'] = 0.15
-                    poketext['reply_voice'] = 0.15
-                    poketext['mutepick'] = 0.15
-                    poketext['example'] = 0.7
+                    poketext['reply_text'] = reply_text
+                    poketext['reply_img'] = reply_img
+                    poketext['reply_voice'] = reply_voice
+                    poketext['mutepick'] = mutepick
+                    poketext['example'] = example
                     config.saveSet('config', pokeconfig);
                     e.reply(`数据设置有误，已恢复默认。`)
                 }
@@ -234,17 +224,31 @@ export class Poke extends plugin {
                 }
 
                 else if (random_type < (reply_text + reply_img + reply_voice + mutepick)) {
-                    logger.info('[禁言生效]');
 
-                    if (pokeconfig['pokemutemaster']) {
-                        logger.info('[主人不禁言已开启]');
-                        let Text = poketext['poketext'][Math.floor(Math.random() * poketext['poketext'].length)].replace("_name_", conf.botAlias[0]);
-                        logger.info(`合成文本：${Text}`);
+                    let group = Bot.pickGroup(`${e.group_id}`, true);
 
-                        await TtsMain.ttsVoice(e, pokeconfig['pokespeaker'], 'ZH', Text);
+                    if ((pokeconfig['pokemutemaster'] && cfg.masterQQ.includes(e.operator_id)) || !group.is_admin) {
+                        fetch("https://api.xingdream.top/API/poke.php").then(Response => Response.json()).then(data => {
+                            if (data) {
+                                if (data.status == 200) {
+                                    try {
+                                        e.reply([segment.image(data.link)])
+                                    }
+                                    catch (err) {
+                                        e.reply('图片获取失败，请检查网络链接或联系开发者。');
+                                    }
+                                }
+                                else {
+                                    e.reply(`获取图链失败，错误码：${data.status}`);
+                                }
+                            }
+                            else {
+                                e.reply('图片api异常。');
+                            }
+                        })
                     }
 
-                    logger.info(e.operator_id + `将要被禁言${usercount}分钟`)
+                    logger.info('[禁言生效]');
 
                     let mutetype = Math.ceil(Math.random() * 3)
 
