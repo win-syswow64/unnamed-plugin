@@ -11,13 +11,11 @@ export class TtsMain {
     }
 
     async getrandom(e, redom_data, reference_audio, session_hash, text, speaker, ttsapi) {
-        logger.info(redom_data);
         if (redom_data == '' && reference_audio == '') {
             let ws = new WebSocket('wss://fs.firefly.matce.cn/queue/join');
 
             ws.on('message', (data) => {
                 data = JSON.parse(data);
-                logger.info(data);
                 if (data.msg == "send_hash") {
                     ws.send(JSON.stringify({
                         "fn_index": 1,
@@ -35,12 +33,10 @@ export class TtsMain {
 
                 if (data.msg == "process_completed") {
                     redom_data = data.output.data;
-                    logger.info(redom_data);
                 }
             });
 
             ws.on('close', () => {
-                logger.info('连接关闭');
                 this.getreference(e, redom_data, reference_audio, session_hash, text, speaker, ttsapi);
             });
         }
@@ -52,7 +48,6 @@ export class TtsMain {
 
             ws.on('message', (data) => {
                 data = JSON.parse(data);
-                logger.info(data);
                 if (data.msg == "send_hash") {
                     ws.send(JSON.stringify({
                         "fn_index": 2,
@@ -70,12 +65,10 @@ export class TtsMain {
                 if (data.msg == "process_completed") {
                     reference_audio = data.output.data;
                     reference_audio[0].data = `${ttsapi}${reference_audio[0].name}`;
-                    logger.info(reference_audio);
                 }
             });
 
             ws.on('close', () => {
-                logger.info('连接关闭');
                 this.getaudio(e, redom_data, reference_audio, text, speaker, session_hash, ttsapi);
             });
         }
@@ -88,7 +81,6 @@ export class TtsMain {
 
             ws.on('message', (data) => {
                 data = JSON.parse(data);
-                logger.info(data);
                 if (data.msg == "send_hash") {
                     ws.send(JSON.stringify({
                         "fn_index": 4,
@@ -120,10 +112,9 @@ export class TtsMain {
             });
 
             ws.on('close', () => {
-                logger.info('连接关闭');
                 if (audiourl != '') {
                     logger.info(audiourl);
-                    e.reply(audiourl);
+                    e.reply(segment.record(audiourl));
                 } else {
                     e.reply('生成失败');
                 }
